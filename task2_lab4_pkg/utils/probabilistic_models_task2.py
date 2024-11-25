@@ -105,10 +105,10 @@ def ht_odom(x, u, a):
     sigma = a
     
     # velocity updates from /odom
-    x[3] = u[0] +  np.random.normal(0, sigma[0])
-    x[4] = u[1] + np.random.normal(0, sigma[1])
+    v_hat = u[0] +  np.random.normal(0, sigma[0])
+    w_hat = u[1] + np.random.normal(0, sigma[1])
 
-    return np.array([x[0], x[1], x[2],x[3], x[4]])
+    return np.array([v_hat, w_hat])
 
 
 def ht_odom_mm_simpy():
@@ -118,11 +118,8 @@ def ht_odom_mm_simpy():
     v_hat, w_hat = symbols(r"\delta_{v_hat} \delta_{w_hat}")
     x, y, theta, v, w = symbols(r"x y \theta v w")
     gux_odom = Matrix([
-        [x],
-        [y],
-        [theta],
-        [v_hat],
-        [w_hat],
+        [v],
+        [w],
     ])
     Gt_odom = gux_odom.jacobian(Matrix([x, y, theta,v,w]))
     Vt_odom = gux_odom.jacobian(Matrix([v_hat, w_hat]))
@@ -133,20 +130,22 @@ def ht_odom_mm_simpy():
 
     return eval_gux_odom, eval_Ht_odom
 
-def ht_imu(x, u, a):
+def ht_imu(*args):
     """ Sample odometry motion model.
     Arguments:
     x -- initial state of the robot before update [x,y,theta,v,w]
     u -- IMU reading obtained from the robot [v_hat, w_hat]
     a -- noise parameters of the motion model [std_trans, std_rot]
     """
-    sigma = np.ones(5)
-    sigma = a
+    # Convert args[0:5] (state vector) to a mutable structure
+    x = np.array(args[:5])  # First 5 values are the state
+    u = args[5]            # 6th value is the measurement (z)
+    a = args[6:]           # Last 5 values are noise parameters
     
     # velocity updates from /odom
-    x[4] = u + np.random.normal(0, sigma[4])
+    x[4] = u + np.random.normal(0, a[4])
 
-    return np.array([x[0], x[1], x[2],x[3], x[4]])
+    return np.array([x[4]])
 
 def ht_imu_mm_simpy():
     """
@@ -154,18 +153,15 @@ def ht_imu_mm_simpy():
     """
     w_hat = symbols(r"\delta_{w_hat}")
     x, y, theta, v, w = symbols(r"x y \theta v w")
-    gux_odom = Matrix([
-        [x],
-        [y],
-        [theta],
-        [v],
-        [w_hat],
+    gux_imu = Matrix([
+        [w]
     ])
-    Gt_odom = gux_odom.jacobian(Matrix([x, y, theta,v,w]))
-    Vt_odom = gux_odom.jacobian(Matrix([w_hat]))
+    Gt_imu = gux_imu.jacobian(Matrix([x, y, theta,v,w]))
+    Vt_imu = gux_imu.jacobian(Matrix([w_hat]))
 
     args = (x, y, theta, v, w, w_hat)
-    eval_gux_imu = squeeze_sympy_out(sympy.lambdify(args, gux_odom, "numpy"))
-    eval_Ht_imu = squeeze_sympy_out(sympy.lambdify(args, Gt_odom, "numpy"))
-
+    eval_gux_imu = squeeze_sympy_out(sympy.lambdify(args, gux_imu, "numpy"))
+    eval_Ht_imu = squeeze_sympy_out(sympy.lambdify(args, Gt_imu, "numpy"))
+    print(Gt_imu)
+    print(eval_Ht_imu)
     return eval_gux_imu, eval_Ht_imu

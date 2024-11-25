@@ -94,10 +94,8 @@ class EKFLocalization(Node):
         self.eval_hx_imu = ht_imu
         _, self.eval_Ht_imu = ht_imu_mm_simpy()
         self.std_w_hat_imu = 0.03
-        self.Q_imu = np.diag([(1e-6)**2] * 5)
-        self.Q_imu[4,4] = self.std_w_hat_imu**2
-        self.sigma_z_imu = np.full(5,1e-6)
-        self.sigma_z_imu[4] = self.std_w_hat_imu
+        self.Q_imu = np.diag([self.std_w_hat_imu**2])
+        self.sigma_z_imu = np.array([self.std_w_hat_imu])
 
     def cmd_vel_callback(self, msg : Twist):
         self.v = msg.linear.x
@@ -111,18 +109,18 @@ class EKFLocalization(Node):
         self.ekf.predict(u=u, sigma_u=sigma_u,g_extra_args=(self.ekf_dt,))
 
     def imu_update_callback(self, msg : Imu ):
-        z = msg.angular_velocity.z
+        z = np.array([msg.angular_velocity.z])
         
         self.ekf.update(z , eval_hx = self.eval_hx_imu, eval_Ht = self.eval_Ht_imu, Qt = self.Q_imu,
-                        Ht_args = (*self.ekf.mu,z), hx_args = (*self.ekf.mu, z, *self.sigma_z_imu),
+                        Ht_args = (*self.ekf.mu,*z), hx_args = (self.ekf.mu, z, self.sigma_z_imu),
                         residual = residual, angle_idx = -1)
 
     def cmd_update_callback(self, msg : Twist):
         v_hat = msg.linear.x
         w_hat = msg.angular.z
-        z = [v_hat, w_hat]
+        z = np.array([v_hat, w_hat])
         self.ekf.update(z , eval_hx = self.eval_hx_odom, eval_Ht = self.eval_Ht_odom, Qt = self.Q_odom,
-                        Ht_args = (self.ekf.mu), hx_args = (*self.ekf.mu, z, *self.sigma_z_odom),
+                        Ht_args = (*self.ekf.mu,*z), hx_args = (self.ekf.mu, z, self.sigma_z_odom),
                         residual = residual, angle_idx = -1)
 
     def update(self, msg : LandmarkArray):

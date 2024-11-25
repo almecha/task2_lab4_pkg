@@ -84,6 +84,10 @@ class RobotEKF:
         SigmaHT = self.Sigma @ Ht.T
         self.S = Ht @ SigmaHT + Qt
         self.K = SigmaHT @ inv(self.S)
+        print("Sigma shape:", self.Sigma.shape)
+        print("SigmaHT shape:", SigmaHT.shape)
+        print("Qt shape:", Qt.shape)
+        print("S shape:", self.S.shape)
 
         # Evaluate the expected measurement and compute the residual, then update the state prediction
         z_hat = eval_hx(*hx_args)
