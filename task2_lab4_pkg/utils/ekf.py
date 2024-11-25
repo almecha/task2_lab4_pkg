@@ -81,13 +81,22 @@ class RobotEKF:
 
         # Compute the Kalman gain, you need to evaluate the Jacobian Ht
         Ht = eval_Ht(*Ht_args) # the asterix is to unpack the element from the list (necessary since the function does not take lists)
-        SigmaHT = self.Sigma @ Ht.T
+        # print("HTTHTRHR shape", Ht.shape)
+        if Ht.T.shape == (5,):
+            SigmaHT = self.Sigma @ Ht.T.reshape((5,1))
+        else:
+            SigmaHT = self.Sigma @ Ht.T
+        # print("Sigma = ", self.Sigma)
+        # print("Ht.T = ",Ht.T)
+        # print("Sigma shape:", self.Sigma.shape)
+        # print("SigmaHT shape:", SigmaHT.shape)
+        # print("Ht shape from ekf perspective is ",Ht.T.shape )
+        # print("Qt shape:", Qt.shape)
         self.S = Ht @ SigmaHT + Qt
+        # print("S shape:", self.S.shape)
+        # print("SigmaHT = ", SigmaHT)
+        # print("S = ", self.S)
         self.K = SigmaHT @ inv(self.S)
-        print("Sigma shape:", self.Sigma.shape)
-        print("SigmaHT shape:", SigmaHT.shape)
-        print("Qt shape:", Qt.shape)
-        print("S shape:", self.S.shape)
 
         # Evaluate the expected measurement and compute the residual, then update the state prediction
         z_hat = eval_hx(*hx_args)
@@ -98,10 +107,23 @@ class RobotEKF:
             y = residual(z, z_hat, angle_indx)
         else: 
             y = residual(z, z_hat)
+        
+        if y.shape == (1,1):
+            y = y.reshape((1,))
+        # print("Y shape is:",y.shape)
+        # print("K shape is:", self.K.shape)
+        # print("shape of mu is: ",self.mu.shape)
+        # print("shape of K@y is",(self.K @ y).shape )
         self.mu = self.mu + self.K @ y
+        #print("UPDATED STATE IS: ",self.mu)
 
         # P = (I-KH)P(I-KH)' + KRK' is more numerically stable and works for non-optimal K vs the equation
         # P = (I-KH)P usually seen in the literature.
         # Note that I is the identity matrix.
-        I_KH = self._I - self.K @ Ht
+        # print("SHAPE OF K IS:", self.K.shape)
+        # print("SHAPE OF HT IS:", Ht.shape)
+        if Ht.shape == (5,):
+            I_KH = self._I - self.K @ Ht.reshape((1,5))
+        else:
+            I_KH = self._I - self.K @ Ht
         self.Sigma = I_KH @ self.Sigma @ I_KH.T + self.K @ Qt @ self.K.T

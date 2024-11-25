@@ -1,0 +1,24 @@
+running develop
+/usr/lib/python3/dist-packages/setuptools/command/easy_install.py:158: EasyInstallDeprecationWarning: easy_install command is deprecated. Use build and pip and other standards-based tools.
+  warnings.warn(
+running egg_info
+creating task2_lab4_pkg.egg-info
+writing task2_lab4_pkg.egg-info/PKG-INFO
+writing dependency_links to task2_lab4_pkg.egg-info/dependency_links.txt
+writing entry points to task2_lab4_pkg.egg-info/entry_points.txt
+writing requirements to task2_lab4_pkg.egg-info/requires.txt
+writing top-level names to task2_lab4_pkg.egg-info/top_level.txt
+writing manifest file 'task2_lab4_pkg.egg-info/SOURCES.txt'
+reading manifest file 'task2_lab4_pkg.egg-info/SOURCES.txt'
+writing manifest file 'task2_lab4_pkg.egg-info/SOURCES.txt'
+running build_ext
+Creating /home/nukharetrd/ros2_ws/src/task2_lab4_pkg/install/task2_lab4_pkg/lib/python3.10/site-packages/task2-lab4-pkg.egg-link (link to .)
+Installing EKF_node script to /home/nukharetrd/ros2_ws/src/task2_lab4_pkg/install/task2_lab4_pkg/lib/task2_lab4_pkg
+
+Installed /home/nukharetrd/ros2_ws/src/task2_lab4_pkg/build/task2_lab4_pkg
+running symlink_data
+creating /home/nukharetrd/ros2_ws/src/task2_lab4_pkg/install/task2_lab4_pkg/share/ament_index
+creating /home/nukharetrd/ros2_ws/src/task2_lab4_pkg/install/task2_lab4_pkg/share/ament_index/resource_index
+creating /home/nukharetrd/ros2_ws/src/task2_lab4_pkg/install/task2_lab4_pkg/share/ament_index/resource_index/packages
+symbolically linking /home/nukharetrd/ros2_ws/src/task2_lab4_pkg/build/task2_lab4_pkg/resource/task2_lab4_pkg -> /home/nukharetrd/ros2_ws/src/task2_lab4_pkg/install/task2_lab4_pkg/share/ament_index/resource_index/packages
+symbolically linking /home/nukharetrd/ros2_ws/src/task2_lab4_pkg/build/task2_lab4_pkg/package.xml -> /home/nukharetrd/ros2_ws/src/task2_lab4_pkg/install/task2_lab4_pkg/share/task2_lab4_pkg

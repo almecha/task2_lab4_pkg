@@ -12,7 +12,6 @@ def sample_velocity_motion_model(x, u, a, dt):
     sigma -- noise parameters of the motion model [a1, a2, a3, a4, a5, a6] or [std_dev_v, std_dev_w]
     dt -- time interval of prediction
     """
-
     sigma = np.ones((3))
     sigma[:2] = a 
     sigma[2] = sigma[1] * 0.5      #1D array with 5 elements
@@ -58,11 +57,11 @@ def velocity_mm_simpy():
 
     Gt = gux.jacobian(Matrix([x, y, theta,v,w]))
     eval_Gt = squeeze_sympy_out(sympy.lambdify((x, y, theta, v, w,v_hat,w_hat, dt), Gt, "numpy"))
-    print("Gt:", Gt)
+    # print("Gt:", Gt)
 
-    Vt = gux.jacobian(Matrix([v, w]))
+    Vt = gux.jacobian(Matrix([v_hat, w_hat]))
     eval_Vt = squeeze_sympy_out(sympy.lambdify((x, y, theta, v, w,v_hat,w_hat, dt), Vt, "numpy"))
-    print("Vt:", Vt)
+    # print("Vt:", Vt)
 
     return eval_gux, eval_Gt, eval_Vt
 
@@ -118,34 +117,30 @@ def ht_odom_mm_simpy():
     v_hat, w_hat = symbols(r"\delta_{v_hat} \delta_{w_hat}")
     x, y, theta, v, w = symbols(r"x y \theta v w")
     gux_odom = Matrix([
-        [v],
-        [w],
+        [v_hat],
+        [w_hat],
     ])
+    eval_gux_odom = squeeze_sympy_out(sympy.lambdify((x, y, theta, v, w,v_hat,w_hat), gux_odom, "numpy"))
     Gt_odom = gux_odom.jacobian(Matrix([x, y, theta,v,w]))
-    Vt_odom = gux_odom.jacobian(Matrix([v_hat, w_hat]))
-
     args = (x, y, theta, v, w, v_hat, w_hat)
     eval_gux_odom = squeeze_sympy_out(sympy.lambdify(args, gux_odom, "numpy"))
     eval_Ht_odom = squeeze_sympy_out(sympy.lambdify(args, Gt_odom, "numpy"))
 
     return eval_gux_odom, eval_Ht_odom
 
-def ht_imu(*args):
+def ht_imu(x, u ,a):
     """ Sample odometry motion model.
     Arguments:
     x -- initial state of the robot before update [x,y,theta,v,w]
     u -- IMU reading obtained from the robot [v_hat, w_hat]
     a -- noise parameters of the motion model [std_trans, std_rot]
     """
-    # Convert args[0:5] (state vector) to a mutable structure
-    x = np.array(args[:5])  # First 5 values are the state
-    u = args[5]            # 6th value is the measurement (z)
-    a = args[6:]           # Last 5 values are noise parameters
+    sigma = a
     
     # velocity updates from /odom
-    x[4] = u + np.random.normal(0, a[4])
+    w_hat = u + np.random.normal(0, sigma)
 
-    return np.array([x[4]])
+    return np.array([w_hat])
 
 def ht_imu_mm_simpy():
     """
@@ -154,14 +149,15 @@ def ht_imu_mm_simpy():
     w_hat = symbols(r"\delta_{w_hat}")
     x, y, theta, v, w = symbols(r"x y \theta v w")
     gux_imu = Matrix([
-        [w]
+        [w_hat],
     ])
     Gt_imu = gux_imu.jacobian(Matrix([x, y, theta,v,w]))
     Vt_imu = gux_imu.jacobian(Matrix([w_hat]))
+    Gt_imu = Matrix([[entry] for entry in Gt_imu.row(0)])
 
     args = (x, y, theta, v, w, w_hat)
     eval_gux_imu = squeeze_sympy_out(sympy.lambdify(args, gux_imu, "numpy"))
     eval_Ht_imu = squeeze_sympy_out(sympy.lambdify(args, Gt_imu, "numpy"))
-    print(Gt_imu)
-    print(eval_Ht_imu)
+    # print(Gt_imu.shape)
+    # print(eval_Ht_imu(1,1,1,1,1,1).shape)
     return eval_gux_imu, eval_Ht_imu

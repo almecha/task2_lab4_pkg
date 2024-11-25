@@ -1,0 +1,3 @@
+[console_scripts]
+EKF_node = task2_lab4_pkg.ekf_node:main
+

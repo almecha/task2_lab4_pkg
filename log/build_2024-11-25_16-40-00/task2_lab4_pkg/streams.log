@@ -1,0 +1,26 @@
+[0.772s] Invoking command in '/home/nukharetrd/ros2_ws/src/task2_lab4_pkg/build/task2_lab4_pkg': PYTHONPATH=/home/nukharetrd/ros2_ws/src/task2_lab4_pkg/build/task2_lab4_pkg/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/nukharetrd/ros2_ws/src/task2_lab4_pkg/install/task2_lab4_pkg/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated setup.py develop --editable --build-directory /home/nukharetrd/ros2_ws/src/task2_lab4_pkg/build/task2_lab4_pkg/build --no-deps symlink_data
+[1.059s] running develop
+[1.059s] /usr/lib/python3/dist-packages/setuptools/command/easy_install.py:158: EasyInstallDeprecationWarning: easy_install command is deprecated. Use build and pip and other standards-based tools.
+[1.059s]   warnings.warn(
+[1.290s] running egg_info
+[1.290s] creating task2_lab4_pkg.egg-info
+[1.291s] writing task2_lab4_pkg.egg-info/PKG-INFO
+[1.292s] writing dependency_links to task2_lab4_pkg.egg-info/dependency_links.txt
+[1.292s] writing entry points to task2_lab4_pkg.egg-info/entry_points.txt
+[1.292s] writing requirements to task2_lab4_pkg.egg-info/requires.txt
+[1.292s] writing top-level names to task2_lab4_pkg.egg-info/top_level.txt
+[1.293s] writing manifest file 'task2_lab4_pkg.egg-info/SOURCES.txt'
+[1.294s] reading manifest file 'task2_lab4_pkg.egg-info/SOURCES.txt'
+[1.295s] writing manifest file 'task2_lab4_pkg.egg-info/SOURCES.txt'
+[1.296s] running build_ext
+[1.297s] Creating /home/nukharetrd/ros2_ws/src/task2_lab4_pkg/install/task2_lab4_pkg/lib/python3.10/site-packages/task2-lab4-pkg.egg-link (link to .)
+[1.297s] Installing EKF_node script to /home/nukharetrd/ros2_ws/src/task2_lab4_pkg/install/task2_lab4_pkg/lib/task2_lab4_pkg
+[1.298s] 
+[1.299s] Installed /home/nukharetrd/ros2_ws/src/task2_lab4_pkg/build/task2_lab4_pkg
+[1.299s] running symlink_data
+[1.299s] creating /home/nukharetrd/ros2_ws/src/task2_lab4_pkg/install/task2_lab4_pkg/share/ament_index
+[1.299s] creating /home/nukharetrd/ros2_ws/src/task2_lab4_pkg/install/task2_lab4_pkg/share/ament_index/resource_index
+[1.299s] creating /home/nukharetrd/ros2_ws/src/task2_lab4_pkg/install/task2_lab4_pkg/share/ament_index/resource_index/packages
+[1.299s] symbolically linking /home/nukharetrd/ros2_ws/src/task2_lab4_pkg/build/task2_lab4_pkg/resource/task2_lab4_pkg -> /home/nukharetrd/ros2_ws/src/task2_lab4_pkg/install/task2_lab4_pkg/share/ament_index/resource_index/packages
+[1.300s] symbolically linking /home/nukharetrd/ros2_ws/src/task2_lab4_pkg/build/task2_lab4_pkg/package.xml -> /home/nukharetrd/ros2_ws/src/task2_lab4_pkg/install/task2_lab4_pkg/share/task2_lab4_pkg
+[1.335s] Invoked command in '/home/nukharetrd/ros2_ws/src/task2_lab4_pkg/build/task2_lab4_pkg' returned '0': PYTHONPATH=/home/nukharetrd/ros2_ws/src/task2_lab4_pkg/build/task2_lab4_pkg/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/nukharetrd/ros2_ws/src/task2_lab4_pkg/install/task2_lab4_pkg/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated setup.py develop --editable --build-directory /home/nukharetrd/ros2_ws/src/task2_lab4_pkg/build/task2_lab4_pkg/build --no-deps symlink_data
