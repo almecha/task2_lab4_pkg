@@ -47,14 +47,14 @@ class EKFLocalization(Node):
         self.std_lin_vel = 0.05
         self.std_ang_vel = 0.02
         self.Mt = np.diag([self.std_lin_vel**2, self.std_ang_vel**2])
-        self.ekf = RobotEKF(dim_x=5, #(x,y,theta)
+        self.ekf = RobotEKF(dim_x=5, #(x,y,theta,v,w)
                             dim_u=2, #(v,w=0)
                             eval_gux=self.eval_gux,
                             eval_Gt=self.eval_Gt,
                             eval_Vt=self.eval_Vt)
         self.ekf.mu = np.array([-2.0,-0.5,0.0, 0.0, 0.0]) #consider the origin as the initial position
-        # print("SHAPE OF mu is", self.ekf.mu.shape)
-        self.ekf.Sigma=np.diag([0.03,0.03,0.03,0.03,0.03])
+        
+        self.ekf.Sigma=np.diag([0.03,0.03,0.02,0.03,0.02])
         self.ekf.Mt = self.Mt
 
         #retrive landmarks position from yaml file:
@@ -83,7 +83,7 @@ class EKFLocalization(Node):
         self.Q_landm = np.diag([self.std_range**2, self.std_bearing**2])
         self.sigma_z = np.array([self.std_range, self.std_bearing])
 
-        #parameters needed for the update of the EKF from ODOM
+        #parameters needed for the update of the EKF from CMD_VEL
         self.eval_hx_odom = ht_odom
         _, self.eval_Ht_odom = ht_odom_mm_simpy()
         self.std_v_hat = 0.05
@@ -108,7 +108,7 @@ class EKFLocalization(Node):
         u = np.array([self.v, self.w])
         sigma_u = np.array([self.std_lin_vel, self.std_ang_vel])
         self.ekf.predict(u=u, sigma_u=sigma_u,g_extra_args=(self.ekf_dt,))
-        print("ekf.mu after odom predict is : ", self.ekf.mu)
+        #print("ekf.mu after odom predict is : ", self.ekf.mu)
 
     def imu_update_callback(self, msg : Imu ):
         z = msg.angular_velocity.z
@@ -118,7 +118,7 @@ class EKFLocalization(Node):
         self.ekf.update(z , eval_hx = self.eval_hx_imu, eval_Ht = self.eval_Ht_imu, Qt = self.Q_imu,
                         Ht_args = (*self.ekf.mu,*z_mat), hx_args = (self.ekf.mu, z, self.sigma_z_imu),
                         residual = residual, angle_idx = -1)
-        print("ekf.mu after imu update is : ", self.ekf.mu)
+        #print("ekf.mu after imu update is : ", self.ekf.mu)
 
     def cmd_update_callback(self, msg : Twist):
         v_hat = msg.linear.x
@@ -129,7 +129,6 @@ class EKFLocalization(Node):
         self.ekf.update(z , eval_hx = self.eval_hx_odom, eval_Ht = self.eval_Ht_odom, Qt = self.Q_odom,
                         Ht_args = (*self.ekf.mu,*z), hx_args = (self.ekf.mu, z, self.sigma_z_odom),
                         residual = residual, angle_idx = -1)
-        print("ekf.mu after odom update is : ", self.ekf.mu)
 
     def update(self, msg : LandmarkArray):
         #extract the necessary parameters from the message
@@ -149,8 +148,6 @@ class EKFLocalization(Node):
                                 hx_args=(self.ekf.mu, lmark, self.sigma_z),
                                 residual=residual, 
                                 angle_idx=-1)
-        print("KALMAN GAIN FROM LMARK UPDATE IS: ", self.ekf.K)
-        print("ekf.mu after landmark update is : ", self.ekf.mu)
         self.ekf_msg.header.stamp = self.get_clock().now().to_msg()
         #extract the position from the mu
         self.ekf_msg.pose.pose.position.x = self.ekf.mu[0]

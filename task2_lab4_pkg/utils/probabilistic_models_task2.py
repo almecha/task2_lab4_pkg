@@ -57,11 +57,9 @@ def velocity_mm_simpy():
 
     Gt = gux.jacobian(Matrix([x, y, theta,v,w]))
     eval_Gt = squeeze_sympy_out(sympy.lambdify((x, y, theta, v, w,v_hat,w_hat, dt), Gt, "numpy"))
-    # print("Gt:", Gt)
 
     Vt = gux.jacobian(Matrix([v_hat, w_hat]))
     eval_Vt = squeeze_sympy_out(sympy.lambdify((x, y, theta, v, w,v_hat,w_hat, dt), Vt, "numpy"))
-    # print("Vt:", Vt)
 
     return eval_gux, eval_Gt, eval_Vt
 
@@ -158,6 +156,5 @@ def ht_imu_mm_simpy():
     args = (x, y, theta, v, w, w_hat)
     eval_gux_imu = squeeze_sympy_out(sympy.lambdify(args, gux_imu, "numpy"))
     eval_Ht_imu = squeeze_sympy_out(sympy.lambdify(args, Gt_imu, "numpy"))
-    # print(Gt_imu.shape)
-    # print(eval_Ht_imu(1,1,1,1,1,1).shape)
+
     return eval_gux_imu, eval_Ht_imu
